@@ -1,0 +1,16 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: demo
+
+swagger:
+  title: SWAGGER-title
+  desc: SWAGGER-desc
+  version: 1.0.0
+  license: SWAGGER-license
+  license-url: SWAGGER-licenseurl
+  contact:
+    name: contact-name
+    url: contact-url
+    email: contact-email
