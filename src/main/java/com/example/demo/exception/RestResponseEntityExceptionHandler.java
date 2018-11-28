@@ -15,11 +15,21 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.util.Date;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
     private final Logger logger = LoggerFactory.getLogger(RestResponseEntityExceptionHandler.class);
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<?> responseNotFoundException(ResourceNotFoundException ex, WebRequest request) {
+        return new ResponseEntity<>(
+                new ErrorDetail(
+                        new Date(), ex.getMessage(), request.getDescription(false)),
+                        HttpStatus.NOT_FOUND
+        );
+    }
 
     @ExceptionHandler({ RepositoryConstraintViolationException.class })
     public ResponseEntity<Object> handleAccessDeniedException(Exception ex, WebRequest request) {
@@ -34,13 +44,13 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         return new ResponseEntity<>(errors, new HttpHeaders(), HttpStatus.NOT_ACCEPTABLE);
     }
 
-    @ExceptionHandler({HttpClientErrorException.NotFound.class})
-    public ResponseEntity<Object> handleNotFoundException(Exception e, WebRequest request) {
-        logger.error("not found");
-
-        return new ResponseEntity<>(null, new HttpHeaders(), HttpStatus.NOT_FOUND);
-
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> globalExceptionHandler(Exception ex, WebRequest request) {
+        return new ResponseEntity<>(
+                new ErrorDetail(
+                        new Date(), ex.getMessage(), request.getDescription(false)),
+                HttpStatus.INTERNAL_SERVER_ERROR
+        );
     }
-
 
 }
